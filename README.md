@@ -28,18 +28,17 @@ Un sistema de administración de inventario por consola desarrollado 100% en Pyt
 ## Instrucciones para probar el proyecto
 
 1. **Clonar el repositorio:**
-   ```bash
+  ```bash
    git clone [https://github.com/agus25varela/Pre-entrega-de-proyecto.git]
    cd Pre-entrega-de-proyecto
    
 2. **Instalar dependencias necesarias:**
-
-  ```Bash
+  ```bash
   pip install gspread google-auth
   Ejecutar el programa:
-
-  ```Bash
-  python gestor_inventario.py
+  
+```bash
+python gestor_inventario.py
 
 3. **Visualización de la Base de Datos**
 El programa se conecta a un archivo real de Google Sheets. Para visualizar los cambios en vivo mientras se agrega o elimina un producto desde la consola, podés acceder al documento en el siguiente enlace:
