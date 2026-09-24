@@ -1,4 +1,4 @@
-# Gestor de Inventario - MyShop
+# Gestor de Inventario - Python
 
 Un sistema de administración de inventario por consola desarrollado 100% en Python, diseñado como backend para un e-commerce. Cuenta con validación estricta de datos y sincronización en tiempo real con **Google Sheets** como base de datos en la nube.
 
@@ -31,3 +31,17 @@ Un sistema de administración de inventario por consola desarrollado 100% en Pyt
    ```bash
    git clone [https://github.com/agus25varela/Pre-entrega-de-proyecto.git]
    cd Pre-entrega-de-proyecto
+   
+2. **Instalar dependencias necesarias:**
+
+  ```Bash
+  pip install gspread google-auth
+  Ejecutar el programa:
+
+  ```Bash
+  python gestor_inventario.py
+
+3. **Visualización de la Base de Datos**
+El programa se conecta a un archivo real de Google Sheets. Para visualizar los cambios en vivo mientras se agrega o elimina un producto desde la consola, podés acceder al documento en el siguiente enlace:
+
+[https://docs.google.com/spreadsheets/d/1AkCJimO2bDeD6Y639dRRJFqmwZaT7WB_vXqUyaoVUec/edit?usp=sharing]
