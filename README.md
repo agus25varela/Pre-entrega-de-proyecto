@@ -31,16 +31,19 @@ Un sistema de administración de inventario por consola desarrollado 100% en Pyt
   ```bash
    git clone [https://github.com/agus25varela/Pre-entrega-de-proyecto.git]
    cd Pre-entrega-de-proyecto
-   
+   ```
+
 2. **Instalar dependencias necesarias:**
   ```bash
-  pip install gspread google-auth
-  Ejecutar el programa:
-  
-```bash
-python gestor_inventario.py
+   pip install gspread google-auth
+  ```
 
-3. **Visualización de la Base de Datos**
-El programa se conecta a un archivo real de Google Sheets. Para visualizar los cambios en vivo mientras se agrega o elimina un producto desde la consola, podés acceder al documento en el siguiente enlace:
+3. **Ejecutar el programa:**
+  ```bash
+  python gestor_inventario.py
+  ```
 
-[https://docs.google.com/spreadsheets/d/1AkCJimO2bDeD6Y639dRRJFqmwZaT7WB_vXqUyaoVUec/edit?usp=sharing]
+4. **Visualización de la Base de Datos**
+
+- El programa se conecta a un archivo real de Google Sheets. Para visualizar los cambios en vivo mientras se agrega o elimina un producto desde la consola, podés acceder al documento en el siguiente enlace:
+[Ver Inventario en Google Sheets](https://docs.google.com/spreadsheets/d/1AkCJimO2bDeD6Y639dRRJFqmwZaT7WB_vXqUyaoVUec/edit?usp=sharing)
