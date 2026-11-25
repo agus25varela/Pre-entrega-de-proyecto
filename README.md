@@ -35,3 +35,29 @@ Un sistema de administración de inventario por consola desarrollado 100% en Pyt
    ```bash
    git clone [https://github.com/agus25varela/Pre-entrega-de-proyecto.git](https://github.com/agus25varela/Pre-entrega-de-proyecto.git)
    cd Pre-entrega-de-proyecto
+   ```
+
+2. **Instalar dependencias necesarias:**
+   ```bash
+   pip install colorama openpyxl
+   ```
+
+3. **Ejecutar el programa:**
+   ```bash
+   python gestor_inventario.py
+   ```
+
+4. **Visualizar productos en consola:**
+   ```bash
+   Con el menú principal activo, ingresá la opción 2 para listar en la terminal todos los registros almacenados actualmente en inventario.db.
+   ```
+
+5. **Generar el reporte en Excel (.xlsx):**
+   ```bash
+   Seleccioná la opción 7 (Exportar inventario a Excel (.xlsx)) en el menú principal. El sistema creará o actualizará automáticamente el archivo inventario_exportado.xlsx en la carpeta raíz del proyecto con encabezados formateados, bordes, filtros y formato de moneda.
+   ```
+
+6. **Ubicar y abrir el archivo Excel generado:**
+   ```bash
+   El archivo inventario_exportado.xlsx queda guardado dentro de la carpeta del proyecto. Si estás trabajando desde Visual Studio Code, podés ubicarlo en el panel lateral izquierdo (Explorador), hacer clic derecho sobre inventario_exportado.xlsx y seleccionar Reveal in File Explorer (Revelar en el Explorador de archivos) para abrirlo directamente con Microsoft Excel, LibreOffice Calc o cualquier visor de planillas.
+   ```
