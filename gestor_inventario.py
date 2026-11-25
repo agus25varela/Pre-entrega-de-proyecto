@@ -219,3 +219,127 @@ def visualizar_productos() -> None:
     with conectar_db() as conn:
         filas = conn.execute("SELECT * FROM productos ORDER BY id ASC").fetchall()
     mostrar_tabla_productos(filas)
+
+def actualizar_producto() -> None:
+    """Actualiza los datos de un producto existente buscándolo por su ID."""
+    print("\n--- Actualizar Producto por ID ---")
+    prod_id = pedir_id("Ingresá el ID del producto a actualizar ")
+    if prod_id is None:
+        print("Operación cancelada.")
+        return
+
+    with conectar_db() as conn:
+        producto = conn.execute("SELECT * FROM productos WHERE id = ?", (prod_id,)).fetchone()
+        if not producto:
+            print(f"{Fore.RED} No existe ningún producto con el ID #{prod_id}.{Style.RESET_ALL}")
+            return
+
+        print(f"\nEditando ID #{producto['id']} (dejá vacío para mantener el valor actual):")
+        nuevo_nombre = pedir_nombre(producto["nombre"])
+        nueva_desc = pedir_descripcion(producto["descripcion"] or "")
+        nueva_cant = pedir_cantidad(producto["cantidad"], permitir_cero=True)
+        nuevo_precio = pedir_precio(producto["precio"])
+        nueva_cat = pedir_categoria(producto["categoria"] or "")
+
+        conn.execute(
+            """
+            UPDATE productos
+            SET nombre = ?, descripcion = ?, cantidad = ?, precio = ?, categoria = ?
+            WHERE id = ?
+            """,
+            (nuevo_nombre, nueva_desc, nueva_cant, nuevo_precio, nueva_cat, prod_id),
+        )
+        conn.commit()
+
+    print(f"{Fore.GREEN} Producto ID #{prod_id} actualizado correctamente.")
+
+
+def eliminar_producto() -> None:
+    """Elimina un producto por su ID previa confirmación del usuario."""
+    print("\n--- Eliminar Producto por ID ---")
+    prod_id = pedir_id("Ingresá el ID del producto a eliminar ")
+    if prod_id is None:
+        print("Operación cancelada.")
+        return
+
+    with conectar_db() as conn:
+        producto = conn.execute("SELECT * FROM productos WHERE id = ?", (prod_id,)).fetchone()
+        if not producto:
+            print(f"{Fore.RED} No se encontró ningún producto con el ID #{prod_id}.")
+            return
+
+        confirmacion = input(
+            f"{Fore.YELLOW} ¿Estás seguro de eliminar '{producto['nombre']}' (ID #{producto['id']})? (s/n): "
+        ).strip().lower()
+
+        if confirmacion == "s":
+            conn.execute("DELETE FROM productos WHERE id = ?", (prod_id,))
+            conn.commit()
+            print(f"{Fore.GREEN} Producto ID #{prod_id} eliminado de '{DB_NAME}'.")
+        else:
+            print(f"{Fore.RED} Eliminación cancelada.{Style.RESET_ALL}")
+
+
+def buscar_producto() -> None:
+    """Busca productos por ID (obligatorio) o por nombre/categoría (opcional)."""
+    print("\n--- Buscar Producto ---")
+    print("1. Buscar por ID")
+    print("2. Buscar por nombre")
+    print("3. Buscar por categoría")
+    sub = input("Elegí un criterio (1-3): ").strip()
+
+    with conectar_db() as conn:
+        if sub == "1":
+            prod_id = pedir_id("Ingresá el ID a buscar ")
+            if prod_id is None:
+                print(f"{Fore.RED} Búsqueda cancelada.{Style.RESET_ALL}")
+                return
+            filas = conn.execute("SELECT * FROM productos WHERE id = ?", (prod_id,)).fetchall()
+        elif sub == "2":
+            termino = input("Ingresá el nombre o parte del nombre: ").strip()
+            filas = conn.execute(
+                "SELECT * FROM productos WHERE LOWER(nombre) LIKE LOWER(?) ORDER BY id ASC",
+                (f"%{termino}%",),
+            ).fetchall()
+        elif sub == "3":
+            termino = input("Ingresá la categoría: ").strip()
+            filas = conn.execute(
+                "SELECT * FROM productos WHERE LOWER(categoria) LIKE LOWER(?) ORDER BY id ASC",
+                (f"%{termino}%",),
+            ).fetchall()
+        else:
+            print(f"{Fore.RED} Opción no válida.{Style.RESET_ALL}")
+            return
+
+    mostrar_tabla_productos(filas)
+
+
+def reporte_bajo_stock() -> None:
+    """Muestra productos con cantidad igual o inferior al límite indicado."""
+    print("\n--- Reporte de Stock Bajo o Igual al Límite ---")
+    limite = pedir_cantidad(permitir_cero=True)
+
+    with conectar_db() as conn:
+        filas = conn.execute(
+            "SELECT * FROM productos WHERE cantidad <= ? ORDER BY cantidad ASC, id ASC",
+            (limite,),
+        ).fetchall()
+
+    if not filas:
+        print(f"{Fore.GREEN} No hay productos con cantidad igual o inferior a {limite}.{Style.RESET_ALL}")
+    else:
+        print(f"\n{Fore.YELLOW} Productos con cantidad <= {limite}:{Style.RESET_ALL}")
+        mostrar_tabla_productos(filas)
+
+def exportar_a_excel(nombre_archivo: str = "inventario_exportado.xlsx") -> None:
+    """Exporta la tabla 'productos' a un archivo Excel (.xlsx) con estilos y colores."""
+    with conectar_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT id, nombre, descripcion, cantidad, precio, categoria FROM productos ORDER BY id ASC"
+        )
+        filas = cursor.fetchall()
+
+    if not filas:
+        print(f"{Fore.YELLOW} No hay productos para exportar.{Style.RESET_ALL}")
+        return
