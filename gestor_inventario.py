@@ -343,3 +343,117 @@ def exportar_a_excel(nombre_archivo: str = "inventario_exportado.xlsx") -> None:
     if not filas:
         print(f"{Fore.YELLOW} No hay productos para exportar.{Style.RESET_ALL}")
         return
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Inventario"
+
+    # Estilos reutilizables
+    fuente_encabezado = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
+    relleno_encabezado = PatternFill(start_color="1F4E78", end_color="1F4E78", fill_type="solid")
+
+    relleno_par = PatternFill(start_color="F2F5F9", end_color="F2F5F9", fill_type="solid")
+    relleno_impar = PatternFill(start_color="FFFFFF", end_color="FFFFFF", fill_type="solid")
+    fuente_cuerpo = Font(name="Calibri", size=11, color="000000")
+
+    borde_fino = Side(border_style="thin", color="D9D9D9")
+    bordes_celda = Border(left=borde_fino, right=borde_fino, top=borde_fino, bottom=borde_fino)
+
+    encabezados = ["ID", "Nombre", "Descripción", "Cantidad", "Precio", "Categoría"]
+    ws.append(encabezados)
+
+    # Formatear fila de encabezados
+    for col_idx, celda in enumerate(ws[1], start=1):
+        celda.font = fuente_encabezado
+        celda.fill = relleno_encabezado
+        celda.border = bordes_celda
+        celda.alignment = Alignment(horizontal="center" if col_idx in (1, 4, 5) else "left", vertical="center")
+    ws.row_dimensions[1].height = 24
+
+    # Cargar datos y aplicar estilos por fila
+    for idx_fila, fila in enumerate(filas, start=2):
+        ws.append(list(fila))
+        relleno_fila = relleno_par if idx_fila % 2 == 0 else relleno_impar
+        ws.row_dimensions[idx_fila].height = 20
+
+        for col_idx in range(1, 7):
+            celda = ws.cell(row=idx_fila, column=col_idx)
+            celda.font = fuente_cuerpo
+            celda.fill = relleno_fila
+            celda.border = bordes_celda
+
+            if col_idx in (1, 4):
+                celda.alignment = Alignment(horizontal="center", vertical="center")
+            elif col_idx == 5:
+                celda.alignment = Alignment(horizontal="right", vertical="center")
+                celda.number_format = "$ #,##0.00"
+            else:
+                celda.alignment = Alignment(horizontal="left", vertical="center")
+
+    # Ajustar ancho de columnas automáticamente
+    anchos = {
+        "A": 8,
+        "B": 26,
+        "C": 34,
+        "D": 12,
+        "E": 15,
+        "F": 18,
+    }
+    for letra_col, ancho in anchos.items():
+        ws.column_dimensions[letra_col].width = ancho
+
+    # Congelar encabezados y activar filtros en Excel
+    ws.freeze_panes = "A2"
+    ws.auto_filter.ref = f"A1:F{len(filas) + 1}"
+
+    wb.save(nombre_archivo)
+    print(f"{Fore.GREEN} Inventario exportado con estilos a '{nombre_archivo}'.")
+
+def mostrar_menu() -> None:
+    """Muestra el menú principal en la terminal."""
+    print(f"\n{Fore.CYAN}{Style.BRIGHT}" + "=" * 45)
+    print("GESTOR DE INVENTARIO")
+    print("=" * 45 + f"{Style.RESET_ALL}")
+    print(f"{Fore.WHITE}1.{Style.RESET_ALL} Registrar nuevo producto")
+    print(f"{Fore.WHITE}2.{Style.RESET_ALL} Visualizar productos registrados")
+    print(f"{Fore.WHITE}3.{Style.RESET_ALL} Actualizar producto (por ID)")
+    print(f"{Fore.WHITE}4.{Style.RESET_ALL} Eliminar producto (por ID)")
+    print(f"{Fore.WHITE}5.{Style.RESET_ALL} Buscar producto (por ID / nombre / categoría)")
+    print(f"{Fore.WHITE}6.{Style.RESET_ALL} Reporte de stock (cantidad <= límite)")
+    print(f"{Fore.WHITE}7.{Style.RESET_ALL} Exportar inventario a Excel (.xlsx)")
+    print(f"{Fore.WHITE}8.{Style.RESET_ALL} Salir")
+    print(f"{Fore.CYAN}{Style.BRIGHT}" + "=" * 45)
+
+
+def main() -> None:
+    """Punto de entrada principal de la aplicación."""
+    inicializar_bd()
+    print(f"{Fore.GREEN} Base de datos '{DB_NAME}' lista y conectada.")
+
+    while True:
+        mostrar_menu()
+        opcion = input("Seleccioná una opción (1-8): ").strip()
+
+        if opcion == "1":
+            registrar_producto()
+        elif opcion == "2":
+            visualizar_productos()
+        elif opcion == "3":
+            actualizar_producto()
+        elif opcion == "4":
+            eliminar_producto()
+        elif opcion == "5":
+            buscar_producto()
+        elif opcion == "6":
+            reporte_bajo_stock()
+        elif opcion == "7":
+            exportar_a_excel()
+        elif opcion == "8":
+            print("\nSaliendo del sistema...")
+            break
+        else:
+            print(f"{Fore.RED} Opción inválida. Ingresá un número del 1 al 8.{Style.RESET_ALL}")
+
+
+if __name__ == "__main__":
+    main()
